@@ -10,16 +10,14 @@ if __name__ == '__main__':
     mask_image_temp = np.zeros((1080, 1920), dtype=np.uint8)
 
     # 初始化2个撞线polygon
-    list_pts_blue = [[204, 305], [227, 431], [605, 522], [1101, 464], [1900, 601], [1902, 495], [1125, 379], [604, 437],
-                     [299, 375], [267, 289]]
+    list_pts_blue = [[1650, 100], [1750, 100], [1750, 970], [170, 970], [170, 100], [270,100],[270,970],[1650,970]]
     ndarray_pts_blue = np.array(list_pts_blue, np.int32)
     polygon_blue_value_1 = cv2.fillPoly(mask_image_temp, [ndarray_pts_blue], color=1)
     polygon_blue_value_1 = polygon_blue_value_1[:, :, np.newaxis]
 
     # 填充第二个polygon
     mask_image_temp = np.zeros((1080, 1920), dtype=np.uint8)
-    list_pts_yellow = [[181, 305], [207, 442], [603, 544], [1107, 485], [1898, 625], [1893, 701], [1101, 568],
-                       [594, 637], [118, 483], [109, 303]]
+    list_pts_yellow = [[1750, 100], [1920, 100], [1920, 970], [1,970], [1, 100], [170,100],[170,970],[1750,970]]
     ndarray_pts_yellow = np.array(list_pts_yellow, np.int32)
     polygon_yellow_value_2 = cv2.fillPoly(mask_image_temp, [ndarray_pts_yellow], color=2)
     polygon_yellow_value_2 = polygon_yellow_value_2[:, :, np.newaxis]
@@ -84,7 +82,7 @@ if __name__ == '__main__':
 
             # 画框
             # 撞线检测点，(x1，y1)，y方向偏移比例 0.0~1.0
-            output_image_frame = tracker.draw_bboxes(im, list_bboxs, line_thickness=None)
+            output_image_frame = tracker.draw_bboxes(im, list_bboxs, line_thickness=1)
             pass
         else:
             # 如果画面中 没有bbox
@@ -100,11 +98,14 @@ if __name__ == '__main__':
                 x1, y1, x2, y2, label, track_id = item_bbox
 
                 # 撞线检测点，(x1，y1)，y方向偏移比例 0.0~1.0
-                y1_offset = int(y1 + ((y2 - y1) * 0.6))
+                # y1_offset = int(y1 + ((y2 - y1) * 0.6))
+                x1_offset = int(x1 + ((x2 - x1) * 0.5))
 
                 # 撞线的点
-                y = y1_offset
-                x = x1
+                # y = y1_offset
+                # x = x1
+                y = y1
+                x = x1_offset
 
                 if polygon_mask_blue_and_yellow[y, x] == 1:
                     # 如果撞 蓝polygon
@@ -190,8 +191,8 @@ if __name__ == '__main__':
             pass
         pass
 
-        text_draw = 'DOWN: ' + str(down_count) + \
-                    ' , UP: ' + str(up_count)
+        text_draw = '(^_^):' + str(down_count) + \
+                    ' (-_-):' + str(up_count)
         output_image_frame = cv2.putText(img=output_image_frame, text=text_draw,
                                          org=draw_text_postion,
                                          fontFace=font_draw_number,
