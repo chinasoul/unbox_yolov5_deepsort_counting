@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     # 填充第二个polygon
     mask_image_temp = np.zeros((1080, 1920), dtype=np.uint8)
-    list_pts_yellow = [[1610, 50], [1710, 50], [1710, 970], [180,970], [180, 50], [270,50],[270,970],[1610,970]]
+    list_pts_yellow = [[1610, 50], [1920, 50], [1920, 970], [1,970], [1, 50], [270,50],[270,970],[1610,970]]
     ndarray_pts_yellow = np.array(list_pts_yellow, np.int32)
     polygon_yellow_value_2 = cv2.fillPoly(mask_image_temp, [ndarray_pts_yellow], color=2)
     polygon_yellow_value_2 = polygon_yellow_value_2[:, :, np.newaxis]
@@ -199,16 +199,16 @@ if __name__ == '__main__':
                                          org=draw_text_postion,
                                          fontFace=font_draw_number,
                                          fontScale=1, color=(0, 0, 100), thickness=2)
-        # if videoWriter is None:
-            # fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')  # opencv3.0
-            # videoWriter = cv2.VideoWriter('result.mp4', fourcc, 30, (output_image_frame.shape[1], output_image_frame.shape[0]))
-        # videoWriter.write(output_image_frame)
-        cv2.imshow('demo', output_image_frame)
+        if videoWriter is None:
+            fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')  # opencv3.0
+            videoWriter = cv2.VideoWriter('result.mp4', fourcc, 30, (output_image_frame.shape[1], output_image_frame.shape[0]))
+        videoWriter.write(output_image_frame)
+        # cv2.imshow('demo', output_image_frame)
         cv2.waitKey(1)
 
         pass
     pass
 
     capture.release()
-    # videoWriter.release()
+    videoWriter.release()
     cv2.destroyAllWindows()
