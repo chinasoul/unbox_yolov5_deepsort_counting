@@ -57,7 +57,7 @@ class Detector:
 
                 for *x, conf, cls_id in det:
                     lbl = self.names[int(cls_id)]
-                    if lbl not in ['car']:
+                    if lbl not in ['car', 'bus', 'truck']:
                         continue
                     pass
                     x1, y1 = int(x[0]), int(x[1])

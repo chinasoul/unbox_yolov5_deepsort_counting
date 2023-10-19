@@ -10,14 +10,14 @@ if __name__ == '__main__':
     mask_image_temp = np.zeros((1080, 1920), dtype=np.uint8)
 
     # 初始化2个撞线polygon
-    list_pts_blue = [[1650, 100], [1750, 100], [1750, 970], [170, 970], [170, 100], [270,100],[270,970],[1650,970]]
+    list_pts_blue = [[1500, 50], [1600, 50], [1600, 970], [280, 970], [280, 50], [380,50],[380,970],[1500,970]]
     ndarray_pts_blue = np.array(list_pts_blue, np.int32)
     polygon_blue_value_1 = cv2.fillPoly(mask_image_temp, [ndarray_pts_blue], color=1)
     polygon_blue_value_1 = polygon_blue_value_1[:, :, np.newaxis]
 
     # 填充第二个polygon
     mask_image_temp = np.zeros((1080, 1920), dtype=np.uint8)
-    list_pts_yellow = [[1750, 100], [1920, 100], [1920, 970], [1,970], [1, 100], [170,100],[170,970],[1750,970]]
+    list_pts_yellow = [[1610, 50], [1710, 50], [1710, 970], [180,970], [180, 50], [270,50],[270,970],[1610,970]]
     ndarray_pts_yellow = np.array(list_pts_yellow, np.int32)
     polygon_yellow_value_2 = cv2.fillPoly(mask_image_temp, [ndarray_pts_yellow], color=2)
     polygon_yellow_value_2 = polygon_yellow_value_2[:, :, np.newaxis]
@@ -31,15 +31,17 @@ if __name__ == '__main__':
     # 蓝 色盘 b,g,r
     blue_color_plate = [255, 0, 0]
     # 蓝 polygon图片
-    blue_image = np.array(polygon_blue_value_1 * blue_color_plate, np.uint8)
+    blue_image = np.array(polygon_blue_value_1 * [1,1,1], np.uint8)
 
     # 黄 色盘
     yellow_color_plate = [0, 255, 255]
     # 黄 polygon图片
-    yellow_image = np.array(polygon_yellow_value_2 * yellow_color_plate, np.uint8)
+    yellow_image = np.array(polygon_yellow_value_2 * [1,1,1], np.uint8)
 
     # 彩色图片（值范围 0-255）
     color_polygons_image = blue_image + yellow_image
+    cv2.line(color_polygons_image, (270, 50), (270,970), (0,255,255), 3)
+    cv2.line(color_polygons_image, (1600, 50), (1600,970), (0,255,255), 3)
     # 缩小尺寸，1920x1080->960x540
     color_polygons_image = cv2.resize(color_polygons_image, (960, 540))
 
@@ -55,7 +57,7 @@ if __name__ == '__main__':
     up_count = 0
 
     font_draw_number = cv2.FONT_HERSHEY_SIMPLEX
-    draw_text_postion = (int(960 * 0.01), int(540 * 0.05))
+    draw_text_postion = (int(960 * 0.3), int(540 * 0.05))
 
     # 初始化 yolov5
     detector = Detector()
@@ -63,7 +65,7 @@ if __name__ == '__main__':
     # 打开视频
     capture = cv2.VideoCapture('./video/test.mp4')
     # capture = cv2.VideoCapture('/mnt/datasets/datasets/towncentre/TownCentreXVID.avi')
-
+    videoWriter = None
     while True:
         # 读取每帧图片
         _, im = capture.read()
@@ -192,12 +194,15 @@ if __name__ == '__main__':
         pass
 
         text_draw = '(^_^):' + str(down_count) + \
-                    ' (-_-):' + str(up_count)
+                    '  (-_-):' + str(up_count)
         output_image_frame = cv2.putText(img=output_image_frame, text=text_draw,
                                          org=draw_text_postion,
                                          fontFace=font_draw_number,
-                                         fontScale=1, color=(255, 255, 255), thickness=2)
-
+                                         fontScale=1, color=(0, 0, 100), thickness=2)
+        # if videoWriter is None:
+            # fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')  # opencv3.0
+            # videoWriter = cv2.VideoWriter('result.mp4', fourcc, 30, (output_image_frame.shape[1], output_image_frame.shape[0]))
+        # videoWriter.write(output_image_frame)
         cv2.imshow('demo', output_image_frame)
         cv2.waitKey(1)
 
@@ -205,4 +210,5 @@ if __name__ == '__main__':
     pass
 
     capture.release()
+    # videoWriter.release()
     cv2.destroyAllWindows()
