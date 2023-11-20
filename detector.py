@@ -56,6 +56,9 @@ class Detector:
                     img.shape[2:], det[:, :4], im0.shape).round()
 
                 for *x, conf, cls_id in det:
+                    # NOT detect small objs and my car
+                    if (int(x[2]+x[3]-x[0]-x[1]) < 100) or int(x[2]-x[0]) > 700:
+                        continue
                     lbl = self.names[int(cls_id)]
                     if lbl not in ['car', 'bus', 'truck']:
                         continue

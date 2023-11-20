@@ -4,20 +4,54 @@ import tracker
 from detector import Detector
 import cv2
 
+'''
+
+        a      a+x1             W-(a+x1+x2+y) W-(a+x1+y)
+                 a+x1+y  a+x1+x2+y             W-(a+x1) W-a
+    b    ________   ________          ________   ________ 
+        |        | |        |        |        | |        |
+        |        | |        |        |        | |        |
+        |        | |        |        |        | |        |
+        |        | |        |        |        | |        |
+        |        | |        |        |        | |        |
+        |        | |        |        |        | |        |
+        |        | |        |        |        | |        |
+        |        | |        |        |        | |        |
+        |________| |________|        |________| |________|
+    H-b
+    
+    
+'''
+
+
+W=1920
+H=1080
+x1=270
+x2=100
+y=20
+a=30
+b=50
+
+video_name = "11101k.mp4"
+
 if __name__ == '__main__':
 
     # 根据视频尺寸，填充一个polygon，供撞线计算使用
     mask_image_temp = np.zeros((1080, 1920), dtype=np.uint8)
 
     # 初始化2个撞线polygon
+    # list_pts_blue = [[W-(a+x1+x2+y),b],[W-(a+x1+y),b],[W-(a+x1+y),H-b],[a+x1+y,H-b],[a+x1+y,b],[a+x1+x2+y,b],[a+x1+x2+y,H-b],[W-(a+x1+x2+y),H-b]]
     list_pts_blue = [[1500, 50], [1600, 50], [1600, 970], [280, 970], [280, 50], [380,50],[380,970],[1500,970]]
+    # print(list_pts_blue)
     ndarray_pts_blue = np.array(list_pts_blue, np.int32)
     polygon_blue_value_1 = cv2.fillPoly(mask_image_temp, [ndarray_pts_blue], color=1)
     polygon_blue_value_1 = polygon_blue_value_1[:, :, np.newaxis]
 
     # 填充第二个polygon
     mask_image_temp = np.zeros((1080, 1920), dtype=np.uint8)
+    # list_pts_yellow = [[W-(a+x1),b],[W-a,b],[W-a,H-b],[a,H-b],[a,b],[a+x1,b],[a+x1,H-b],[W-(a+x1),H-b]]
     list_pts_yellow = [[1610, 50], [1920, 50], [1920, 970], [1,970], [1, 50], [270,50],[270,970],[1610,970]]
+    # print(list_pts_yellow)
     ndarray_pts_yellow = np.array(list_pts_yellow, np.int32)
     polygon_yellow_value_2 = cv2.fillPoly(mask_image_temp, [ndarray_pts_yellow], color=2)
     polygon_yellow_value_2 = polygon_yellow_value_2[:, :, np.newaxis]
@@ -42,6 +76,8 @@ if __name__ == '__main__':
     color_polygons_image = blue_image + yellow_image
     cv2.line(color_polygons_image, (270, 50), (270,970), (0,255,255), 3)
     cv2.line(color_polygons_image, (1600, 50), (1600,970), (0,255,255), 3)
+    # cv2.line(color_polygons_image, (a+x1+int(y/2),b), (a+x1+int(y/2),H-b), (0,255,255), 3)
+    # cv2.line(color_polygons_image, (W-(a+x1+int(y/2)),b), (W-(a+x1+int(y/2)),H-b), (0,255,255), 3)
     # 缩小尺寸，1920x1080->960x540
     color_polygons_image = cv2.resize(color_polygons_image, (960, 540))
 
@@ -63,7 +99,7 @@ if __name__ == '__main__':
     detector = Detector()
 
     # 打开视频
-    capture = cv2.VideoCapture('./video/test.mp4')
+    capture = cv2.VideoCapture('./video/{}'.format(video_name))
     # capture = cv2.VideoCapture('/mnt/datasets/datasets/towncentre/TownCentreXVID.avi')
     videoWriter = None
     while True:
@@ -201,7 +237,7 @@ if __name__ == '__main__':
                                          fontScale=1, color=(0, 0, 100), thickness=2)
         if videoWriter is None:
             fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')  # opencv3.0
-            videoWriter = cv2.VideoWriter('result.mp4', fourcc, 30, (output_image_frame.shape[1], output_image_frame.shape[0]))
+            videoWriter = cv2.VideoWriter('{}_result.mp4'.format(video_name.split('.')[0]), fourcc, 30, (output_image_frame.shape[1], output_image_frame.shape[0]))
         videoWriter.write(output_image_frame)
         # cv2.imshow('demo', output_image_frame)
         cv2.waitKey(1)
