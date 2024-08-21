@@ -3,6 +3,8 @@ import numpy as np
 import tracker
 from detector import Detector
 import cv2
+import time
+from datetime import datetime
 
 '''
 
@@ -102,6 +104,10 @@ if __name__ == '__main__':
     capture = cv2.VideoCapture('./video/{}'.format(video_name))
     # capture = cv2.VideoCapture('/mnt/datasets/datasets/towncentre/TownCentreXVID.avi')
     total_frames = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
+    start_time = time.time()
+
+    readable_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
+    print(f"Current time is:{readable_time}")
 
     videoWriter = None
     while True:
@@ -159,11 +165,17 @@ if __name__ == '__main__':
                         # 外出+1
                         up_count += 1
 
-                        print(f'类别: {label} | id: {track_id} | 上行撞线 | 上行撞线总数: {up_count} | 上行id列表: {list_overlapping_yellow_polygon}')
+                        print(f'\r\n类别: {label} | id: {track_id} | 上行撞线 | 上行撞线总数: {up_count} | 上行id列表: {list_overlapping_yellow_polygon}')
 
+                        elapsed_time = time.time() - start_time
                         current_frame = int(capture.get(cv2.CAP_PROP_POS_FRAMES))
+                        if current_frame > 0:
+                            estimated_total_time = elapsed_time / current_frame * total_frames
+                            estimated_time_remaining = estimated_total_time - elapsed_time
+                        else:
+                            estimated_time_remaining = 0
                         progress = (current_frame / total_frames) * 100
-                        print(f"current_frame:{current_frame}, total_frames:{total_frames}, progress:{progress:.2f}%")
+                        print(f"current_frame:{current_frame}, total_frames:{total_frames}, progress:{progress:.2f}%, estimated_time_remaining:{estimated_time_remaining:.2f}s")
 
                         # 删除 黄polygon list 中的此id
                         list_overlapping_yellow_polygon.remove(track_id)
@@ -185,11 +197,17 @@ if __name__ == '__main__':
                         # 进入+1
                         down_count += 1
 
-                        print(f'类别: {label} | id: {track_id} | 下行撞线 | 下行撞线总数: {down_count} | 下行id列表: {list_overlapping_blue_polygon}')
+                        print(f'\r\n类别: {label} | id: {track_id} | 下行撞线 | 下行撞线总数: {down_count} | 下行id列表: {list_overlapping_blue_polygon}')
 
+                        elapsed_time = time.time() - start_time
                         current_frame = int(capture.get(cv2.CAP_PROP_POS_FRAMES))
+                        if current_frame > 0:
+                            estimated_total_time = elapsed_time / current_frame * total_frames
+                            estimated_time_remaining = estimated_total_time - elapsed_time
+                        else:
+                            estimated_time_remaining = 0
                         progress = (current_frame / total_frames) * 100
-                        print(f"current_frame:{current_frame}, total_frames:{total_frames}, progress:{progress:.2f}%")
+                        print(f"current_frame:{current_frame}, total_frames:{total_frames}, progress:{progress:.2f}%, estimated_time_remaining:{estimated_time_remaining:.2f}s")
 
                         # 删除 蓝polygon list 中的此id
                         list_overlapping_blue_polygon.remove(track_id)
