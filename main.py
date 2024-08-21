@@ -32,7 +32,7 @@ y=20
 a=30
 b=50
 
-video_name = "11101k.mp4"
+video_name = "test.mp4"
 
 if __name__ == '__main__':
 
@@ -101,6 +101,8 @@ if __name__ == '__main__':
     # 打开视频
     capture = cv2.VideoCapture('./video/{}'.format(video_name))
     # capture = cv2.VideoCapture('/mnt/datasets/datasets/towncentre/TownCentreXVID.avi')
+    total_frames = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
+
     videoWriter = None
     while True:
         # 读取每帧图片
@@ -159,6 +161,10 @@ if __name__ == '__main__':
 
                         print(f'类别: {label} | id: {track_id} | 上行撞线 | 上行撞线总数: {up_count} | 上行id列表: {list_overlapping_yellow_polygon}')
 
+                        current_frame = int(capture.get(cv2.CAP_PROP_POS_FRAMES))
+                        progress = (current_frame / total_frames) * 100
+                        print(f"current_frame:{current_frame}, total_frames:{total_frames}, progress:{progress:.2f}%")
+
                         # 删除 黄polygon list 中的此id
                         list_overlapping_yellow_polygon.remove(track_id)
 
@@ -180,6 +186,10 @@ if __name__ == '__main__':
                         down_count += 1
 
                         print(f'类别: {label} | id: {track_id} | 下行撞线 | 下行撞线总数: {down_count} | 下行id列表: {list_overlapping_blue_polygon}')
+
+                        current_frame = int(capture.get(cv2.CAP_PROP_POS_FRAMES))
+                        progress = (current_frame / total_frames) * 100
+                        print(f"current_frame:{current_frame}, total_frames:{total_frames}, progress:{progress:.2f}%")
 
                         # 删除 蓝polygon list 中的此id
                         list_overlapping_blue_polygon.remove(track_id)
